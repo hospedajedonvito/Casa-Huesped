@@ -1,0 +1,514 @@
+:root {
+    --primary: #5c6754;
+    --primary-dark: #3e4738;
+    --accent: #c2a67a;
+    --text: #2c302e;
+    --bg-light: #f7f5f0;
+    --white: #ffffff;
+    --dark-nav: #1a1a1a; /* El color oscuro que se ve en la foto image_427ec7.jpg */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--dark-nav); /* Fondo oscuro como en tu captura */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #dbdbd5; /* Tono claro para contrastar con el fondo oscuro */
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+/* Ocultar elementos del menú interactivo en Computadoras */
+.menu-checkbox {
+    display: none;
+}
+
+.menu-button-label {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.menu-button-label span {
+    background-color: #ffffff;
+    height: 3px;
+    width: 28px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #e0e0e0;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+/* Hero / Carousel */
+.hero {
+    position: relative;
+    height: 80vh;
+    min-height: 500px;
+    overflow: hidden;
+    background-color: #333;
+}
+
+.carousel-track {
+    display: flex;
+    width: 300%;
+    height: 100%;
+    animation: scrollCarousel 12s infinite ease-in-out;
+}
+
+.carousel-slide {
+    width: 33.333%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+@keyframes scrollCarousel {
+    0%, 28% { transform: translateX(0%); }
+    33%, 61% { transform: translateX(-33.333%); }
+    66%, 100% { transform: translateX(-66.666%); }
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--white);
+    padding: 20px;
+    z-index: 10;
+}
+
+.hero-title {
+    font-size: 48px;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+    font-weight: 700;
+}
+
+.hero-subtitle {
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 300;
+    color: #f0f0f0;
+}
+
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    background-color: #25D366;
+    color: white;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+    background-color: #20ba5a;
+}
+
+/* Welcome Section */
+.welcome-section {
+    max-width: 900px;
+    margin: 60px auto;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.welcome-phrase {
+    font-size: 28px;
+    color: var(--primary);
+    font-style: italic;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 60px 20px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 32px;
+    color: var(--primary-dark);
+    margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--accent);
+}
+
+/* Features */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 60px;
+}
+
+.feature-card {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    border-top: 4px solid var(--primary);
+}
+
+.feature-card h3 {
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+}
+
+/* Gallery */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 60px;
+}
+
+.gallery-item {
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    transition: transform 0.3s;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+}
+
+.gallery-img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-info {
+    padding: 15px;
+}
+
+.gallery-info h4 {
+    color: var(--primary-dark);
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.gallery-info p {
+    font-size: 14px;
+    color: #777;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.info-box {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+}
+
+.info-box h3 {
+    color: var(--primary);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--bg-light);
+    padding-bottom: 10px;
+}
+
+.info-list {
+    list-style: none;
+}
+
+.info-list li {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.info-list li span.label {
+    font-weight: bold;
+    color: var(--text);
+}
+
+/* Maps Section */
+.map-section {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.map-btn {
+    display: inline-block;
+    background-color: var(--primary);
+    color: white;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+
+.map-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Comments Section */
+.comments-section {
+    background: var(--white);
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 60px;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    background: var(--bg-light);
+    padding: 25px;
+    border-radius: 8px;
+}
+
+.comment-form h3 {
+    color: var(--primary-dark);
+    margin-bottom: 5px;
+}
+
+.comment-form input, .comment-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.rating-stars input {
+    display: none;
+}
+
+.rating-stars label {
+    font-size: 30px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.rating-stars input:checked ~ label,
+.rating-stars label:hover,
+.rating-stars label:hover ~ label {
+    color: #ffc107;
+}
+
+.btn-submit {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-dark);
+}
+
+.comments-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comment-card {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment-name {
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+.comment-stars {
+    color: #ffc107;
+    font-size: 18px;
+}
+
+.comment-text {
+    color: #555;
+    font-size: 15px;
+}
+
+footer {
+    background-color: var(--primary-dark);
+    color: var(--white);
+    text-align: center;
+    padding: 30px;
+    margin-top: 40px;
+}
+
+/* --- NUEVO MENÚ DESPLEGABLE EN CELULARES (RESPONSIVE) --- */
+@media (max-width: 768px) {
+    .hero-title { font-size: 34px; }
+    .hero-subtitle { font-size: 16px; }
+    
+    .nav-container {
+        padding: 15px 20px;
+    }
+
+    /* Muestra el botón de hamburguesa (las 3 rayitas) */
+    .menu-button-label {
+        display: flex;
+        z-index: 1002;
+    }
+
+    /* Oculta los links por defecto y los prepara en modo menú vertical */
+    .nav-links {
+        display: none; 
+        flex-direction: column;
+        position: absolute;
+        top: 100%; /* Aparece justo abajo de la barra negra principal */
+        left: 0;
+        width: 100%;
+        background-color: var(--dark-nav); /* Sigue la estética negra de la cabecera */
+        padding: 10px 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        gap: 0;
+        z-index: 1001;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 15px 0;
+        font-size: 16px;
+        border-bottom: 1px solid #2d2d2d; /* Separador sutil para que quede súper organizado */
+    }
+    
+    .nav-links li:last-child a {
+        border-bottom: none;
+    }
+
+    /* TRUCO CSS: Cuando tocan las rayitas (el checkbox se activa), se despliega la lista */
+    .menu-checkbox:checked ~ .nav-links {
+        display: flex;
+    }
+
+    /* Animación simple en las 3 rayitas al abrir el menú */
+    .menu-checkbox:checked ~ .menu-button-label span:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+    }
+    .menu-checkbox:checked ~ .menu-button-label span:nth-child(2) {
+        opacity: 0;
+    }
+    .menu-checkbox:checked ~ .menu-button-label span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+}
