@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- 3. Lógica del Formulario de Reserva ---
+    // --- 3. Lógica del Formulario de Reserva (CAMBIADO Y OPTIMIZADO) ---
     const reservaForm = document.getElementById('reservaForm');
     if (reservaForm) {
         reservaForm.addEventListener('submit', async (e) => {
@@ -55,21 +55,27 @@ document.addEventListener("DOMContentLoaded", function () {
             const nombre = document.getElementById('nombre').value;
             const telefono = document.getElementById('telefono').value;
 
+            // Filtro de seguridad inicial
+            if (checkin >= checkout) {
+                alert("⚠️ La fecha de check-out debe ser posterior a la fecha de check-in.");
+                return;
+            }
+
             btn.disabled = true;
             btn.innerText = 'Verificando disponibilidad...';
 
             try {
-                // CORREGIDO: Ahora busca disponibilidad usando la variable correcta
+                // Buscamos la disponibilidad usando la variable correcta
                 const respuesta = await fetch(SCRIPT_RESERVAS_URL);
                 const reservas = await respuesta.json();
 
-                // Comparamos si la fecha elegida está en el rango de alguna reserva
+                // CORRECCIÓN: Comparamos de forma estricta que los rangos de fecha no se superpongan
                 const esConflicto = reservas.some(r => {
-                    return (checkin >= r.inicio && checkin <= r.fin) || (checkout >= r.inicio && checkout <= r.fin);
+                    return (checkin <= r.fin && checkout >= r.inicio);
                 });
 
                 if (esConflicto) {
-                    alert("⚠️ Lo sentimos, esas fechas ya están reservadas. Por favor elige otras.");
+                    alert("⚠️ Lo sentimos, esas fechas ya están reservadas o se superponen con otra estadía. Por favor elige otras.");
                     btn.disabled = false;
                     btn.innerText = 'Enviar Solicitud y Reservar';
                     return; 
@@ -77,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 btn.innerText = 'Enviando a Graciela...';
 
-                // CORREGIDO: Cambiado de SCRIPT_URL a SCRIPT_RESERVAS_URL para que no falle la petición POST
+                // Enviamos la petición POST al script de reservas
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -99,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             } catch (error) {
                 console.error("Error:", error);
-                alert("Hubo un error al enviar. Intenta nuevamente.");
+                alert("Hubo un error al procesar tu reserva. Intenta nuevamente.");
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Enviar Solicitud y Reservar';
