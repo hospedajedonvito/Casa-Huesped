@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts (Asegúrate de cambiarla si generas una nueva implementación)
+    // URL de tus dos Google Apps Scripts (¡VINCULADAS CORRECTAMENTE!)
     const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbw-TVssZamZXgKl9m5RFZTsq-8imf7pBE-xKbnsXFWT-kVkMdJ-rrrA-hrNXnS0wE6X/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- 3. Lógica del Formulario de Reserva (Manejo de Errores Mejorado) ---
+    // --- 3. Lógica del Formulario de Reserva ---
     const reservaForm = document.getElementById('reservaForm');
     if (reservaForm) {
         reservaForm.addEventListener('submit', async (e) => {
@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
             } catch (error) {
-                // Si falla el GET por problemas de CORS o permisos de Google, imprimimos el error en consola
                 console.warn("No se pudo verificar la disponibilidad online de forma estricta:", error);
             }
 
@@ -103,12 +102,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error al registrar en Google Sheets:", postError);
             }
 
-            // Redirección asegurada a WhatsApp: Esto se ejecutará pase lo que pase con la hoja de cálculo
+            // CORRECCIÓN AQUÍ: Se quitaron los emojis propensos a fallar por texto limpio en negritas para WhatsApp
             const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
-                            "👤 *Nombre:* " + nombre + "\n" +
-                            "📞 *Tel:* " + telefono + "\n" +
-                            "🗓️ *Check-in:* " + checkin + "\n" +
-                            "📅 *Check-out:* " + checkout;
+                            "*NOMBRE:* " + nombre + "\n" +
+                            "*TEL:* " + telefono + "\n" +
+                            "*CHECK-IN:* " + checkin + "\n" +
+                            "*CHECK-OUT:* " + checkout;
             
             window.open("https://wa.me/5491154523758?text=" + encodeURIComponent(mensaje), '_blank');
 
@@ -162,7 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const datos = {
                 nombre: document.getElementById('formNombre').value,
-                puntuacion: document.querySelector('input[name="puntuacion"]:checked').value,
+                puntuacion: document.querySelector('input[name=\"puntuacion\"]:checked').value,
                 comentario: document.getElementById('formComentario').value
             };
 
