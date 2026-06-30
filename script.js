@@ -74,23 +74,28 @@ document.addEventListener("DOMContentLoaded", function () {
         let fechasDeshabilitadas = [];
 
         try {
-            const respuesta = await fetch(SCRIPT_RESERVAS_URL);
+            // Agregamos un timestamp dinámico (?_=...) para obligar a GitHub y al navegador a traer datos frescos de la Sheets
+            const respuesta = await fetch(SCRIPT_RESERVAS_URL + '?_=' + new Date().getTime());
             if (respuesta.ok) {
                 const reservas = await respuesta.json();
                 console.log("Reservas detectadas desde Sheets:", reservas);
                 
                 reservas.forEach(reserva => {
-                    // Tolerancia a mayúsculas/minúsculas en el Sheets (inicio, fin, INICIO, FIN)
-                    let inicioRaw = reserva.inicio || reserva.INICIO || reserva.Inicio;
-                    let finRaw = reserva.fin || reserva.FIN || reserva.Fin;
+                    // Mapeamos todas las variantes posibles de nombres de columna, incluyendo 'Check-in' y 'Check-out' de tu Excel
+                    let inicioRaw = reserva.inicio || reserva.INICIO || reserva.Inicio || reserva.checkin || reserva['Check-in'];
+                    let finRaw = reserva.fin || reserva.FIN || reserva.Fin || reserva.checkout || reserva['Check-out'];
 
                     let inicioFormateado = formatearFecha(inicioRaw);
                     let finFormateado = formatearFecha(finRaw);
 
                     if (inicioFormateado && finFormateado) {
+                        // Forzamos la creación del objeto Date a medianoche local para evitar desfases de zona horaria en Flatpickr
+                        let fechaInicio = new Date(inicioFormateado + 'T00:00:00');
+                        let fechaFin = new Date(finFormateado + 'T00:00:00');
+
                         fechasDeshabilitadas.push({
-                            from: inicioFormateado,
-                            to: finFormateado
+                            from: fechaInicio,
+                            to: fechaFin
                         });
                     }
                 });
@@ -100,6 +105,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         console.log("Fechas estructuradas para bloquear:", fechasDeshabilitadas);
+
+        // Si ya existían instancias de los calendarios, las destruimos para reinicializarlas sin duplicar buffers
+        if (fpCheckin) fpCheckin.destroy();
+        if (fpCheckout) fpCheckout.destroy();
 
         // Inicializador para Check-in
         fpCheckin = flatpickr("#checkin", {
@@ -119,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
             locale: "es",
             minDate: "today",
             dateFormat: "Y-m-d",
-            disable: fechasDeshabilitadas
+            disable: fechasDeshabilitadas // Aplicamos el bloqueo de días también al calendario de salida
         });
     }
 
@@ -173,9 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert('¡Solicitud enviada! Se abrirá WhatsApp para confirmar la disponibilidad final con Graciela.');
             reservaForm.reset();
             
-            if(fpCheckin) fpCheckin.clear();
-            if(fpCheckout) fpCheckout.clear();
-            
+            // Re-ejecutamos la sincronización para traer los bloqueos actualizados si los hubiera
             inicializarCalendarios();
 
             btn.disabled = false;
