@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts (¡Ahora vinculadas correctamente!)
+    // URL de tus dos Google Apps Scripts (¡VINCULADAS CORRECTAMENTE!)
     const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbzKyR1N142pR1fm_iU2jlmL8NbrgHimhxFUB3cNLirS_DFHV0X9nt8KZpRPnug6bCsf/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     if(slides.length > 0) {
-        // Asegura que empiece mostrando el primer slide
         slides.forEach((slide, index) => {
             slide.style.display = index === 0 ? "block" : "none";
         });
@@ -60,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.innerText = 'Verificando disponibilidad...';
 
             try {
-                // CORREGIDO: Usamos SCRIPT_RESERVAS_URL para consultar disponibilidad
+                // CORREGIDO: Ahora busca disponibilidad usando la variable correcta
                 const respuesta = await fetch(SCRIPT_RESERVAS_URL);
                 const reservas = await respuesta.json();
 
@@ -78,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 btn.innerText = 'Enviando a Graciela...';
 
-                // CORREGIDO: Cambiado de SCRIPT_URL a SCRIPT_RESERVAS_URL para guardar en la hoja correcta
+                // CORREGIDO: Cambiado de SCRIPT_URL a SCRIPT_RESERVAS_URL para que no falle la petición POST
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -86,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({ nombre, telefono, checkin, checkout })
                 });
 
-                // Construcción limpia del mensaje para WhatsApp sin símbolos extraños
+                // Construcción sólida del mensaje para WhatsApp sin símbolos extraños
                 const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
                                 "👤 *Nombre:* " + nombre + "\n" +
                                 "📞 *Tel:* " + telefono + "\n" +
