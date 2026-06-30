@@ -557,3 +557,60 @@ footer {
     .menu-checkbox:checked ~ .menu-button-label span:nth-child(2) { opacity: 0; }
     .menu-checkbox:checked ~ .menu-button-label span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 }
+/* --- ESTILOS COMPLEMENTARIOS PARA EL FORMULARIO DE RESERVA --- */
+.reserva-section {
+    background: var(--white);
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 60px;
+}
+
+.reserva-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--bg-light);
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.reserva-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.reserva-form input[type="text"],
+.reserva-form input[type="tel"],
+.reserva-form input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    background-color: var(--white);
+}
+
+.reserva-form label {
+    font-weight: bold;
+    color: var(--text);
+    font-size: 14px;
+    text-align: left;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.date-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 480px) {
+    .date-group {
+        grid-template-columns: 1fr;
+    }
+}
