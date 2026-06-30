@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don Vito | Casa de Huéspedes en Cucullú</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
+    
+    <!-- Librería Flatpickr para el bloqueo visual de fechas en el calendario -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_green.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
     <style>
         /* Ajuste necesario para asegurar que las imágenes del carrusel se comporten correctamente */
         .carousel-track {
@@ -29,6 +36,10 @@
             opacity: 1;
             z-index: 2;
         }
+        /* Pequeño ajuste estético para que el input de Flatpickr combine con el diseño */
+        .flatpickr-input[readonly] {
+            background-color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
@@ -47,7 +58,8 @@
             <ul class="nav-links">
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Instalaciones</a></li>
-                <li><a href="#informacion">Información</a></li> <li><a href="#reservas">Reservas</a></li>
+                <li><a href="#informacion">Información</a></li> 
+                <li><a href="#reservas">Reservas</a></li>
                 <li><a href="#opiniones">Opiniones</a></li>
                 <li><a href="#contacto">Contacto</a></li>
                 <li><a href="#ubicacion">Ubicación</a></li>
@@ -176,11 +188,11 @@
                 <div class="form-group date-group">
                     <div>
                         <label for="checkin">Fecha Check-in:</label>
-                        <input type="date" id="checkin" required>
+                        <input type="text" id="checkin" placeholder="Seleccionar fecha" required>
                     </div>
                     <div>
                         <label for="checkout">Fecha Check-out:</label>
-                        <input type="date" id="checkout" required>
+                        <input type="text" id="checkout" placeholder="Seleccionar fecha" required>
                     </div>
                 </div>
                 <button type="submit" class="btn-submit" id="btnEnviarReserva">Enviar Solicitud y Reservar</button>
@@ -230,6 +242,6 @@
         <p>© 2026 Don Vito - Casa de Huéspedes en Cucullú. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>
