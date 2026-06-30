@@ -51,22 +51,56 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Función auxiliar para normalizar formatos de fecha (p. ej. DD/MM/YYYY a YYYY-MM-DD)
-    function formatearFecha(fechaStr) {
-        if (!fechaStr) return null;
-        let str = String(fechaStr).trim();
-        // Si viene con formato DD/MM/YYYY
+    // FUNCIÓN MEJORADA: Convierte cualquier entrada manual de Sheets a un Objeto Date válido
+    function parsearFechaSegura(fechaRaw) {
+        if (!fechaRaw) return null;
+        
+        // Si ya es un objeto Date
+        if (fechaRaw instanceof Date) return fechaRaw;
+        
+        let str = String(fechaRaw).trim();
+        if (!str) return null;
+
+        // Limpiar posibles residuos de hora (ej: "2026-07-10T03:00:00.000Z" -> "2026-07-10")
+        if (str.includes('T')) str = str.split('T')[0];
+        if (str.includes(' ')) str = str.split(' ')[0];
+
+        let año, mes, dia;
+
         if (str.includes('/')) {
             let partes = str.split('/');
-            if (partes[0].length <= 2 && partes[2].length === 4) {
-                return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+            if (partes[2].length === 4) { // Formato común manual: DD/MM/YYYY
+                dia = parseInt(partes[0], 10);
+                mes = parseInt(partes[1], 10) - 1;
+                año = parseInt(partes[2], 10);
+            } else if (partes[0].length === 4) { // Formato: YYYY/MM/DD
+                año = parseInt(partes[0], 10);
+                mes = parseInt(partes[1], 10) - 1;
+                dia = parseInt(partes[2], 10);
+            }
+        } else if (str.includes('-')) {
+            let partes = str.split('-');
+            if (partes[0].length === 4) { // Formato estándar: YYYY-MM-DD
+                año = parseInt(partes[0], 10);
+                mes = parseInt(partes[1], 10) - 1;
+                dia = parseInt(partes[2], 10);
+            } else if (partes[2].length === 4) { // Formato manual alternativo: DD-MM-YYYY
+                dia = parseInt(partes[0], 10);
+                mes = parseInt(partes[1], 10) - 1;
+                año = parseInt(partes[2], 10);
             }
         }
-        // Si ya viene con formato YYYY-MM-DD o ISO estándar
-        if (str.includes('-')) {
-            return str.split('T')[0];
+
+        // Si logramos extraer los componentes numéricos con éxito
+        if (!isNaN(año) && !isNaN(mes) && !isNaN(dia)) {
+            return new Date(año, mes, dia, 0, 0, 0);
         }
-        return str;
+
+        // Intento desesperado final por si el navegador lo entiende por defecto
+        let intentoDirecto = new Date(str);
+        if (!isNaN(intentoDirecto.getTime())) return intentoDirecto;
+
+        return null;
     }
 
     // --- 3. Inicialización y Bloqueo del Calendario en Tiempo Real ---
@@ -74,25 +108,21 @@ document.addEventListener("DOMContentLoaded", function () {
         let fechasDeshabilitadas = [];
 
         try {
-            // Agregamos un timestamp dinámico (?_=...) para obligar a GitHub y al navegador a traer datos frescos de la Sheets
+            // Timestamp para evitar la caché del navegador
             const respuesta = await fetch(SCRIPT_RESERVAS_URL + '?_=' + new Date().getTime());
             if (respuesta.ok) {
                 const reservas = await respuesta.json();
-                console.log("Reservas detectadas desde Sheets:", reservas);
+                console.log("Datos crudos recibidos de Sheets:", reservas);
                 
                 reservas.forEach(reserva => {
-                    // Mapeamos todas las variantes posibles de nombres de columna, incluyendo 'Check-in' y 'Check-out' de tu Excel
-                    let inicioRaw = reserva.inicio || reserva.INICIO || reserva.Inicio || reserva.checkin || reserva['Check-in'];
-                    let finRaw = reserva.fin || reserva.FIN || reserva.Fin || reserva.checkout || reserva['Check-out'];
+                    // Mapea las columnas 'Check-in' y 'Check-out' o sus variantes
+                    let inicioRaw = reserva.checkin || reserva['Check-in'] || reserva.inicio || reserva.INICIO || reserva.Inicio;
+                    let finRaw = reserva.checkout || reserva['Check-out'] || reserva.fin || reserva.FIN || reserva.Fin;
 
-                    let inicioFormateado = formatearFecha(inicioRaw);
-                    let finFormateado = formatearFecha(finRaw);
+                    let fechaInicio = parsearFechaSegura(inicioRaw);
+                    let fechaFin = parsearFechaSegura(finRaw);
 
-                    if (inicioFormateado && finFormateado) {
-                        // Forzamos la creación del objeto Date a medianoche local para evitar desfases de zona horaria en Flatpickr
-                        let fechaInicio = new Date(inicioFormateado + 'T00:00:00');
-                        let fechaFin = new Date(finFormateado + 'T00:00:00');
-
+                    if (fechaInicio && fechaFin) {
                         fechasDeshabilitadas.push({
                             from: fechaInicio,
                             to: fechaFin
@@ -101,16 +131,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
         } catch (error) {
-            console.warn("No se pudieron mapear los días ocupados desde la planilla:", error);
+            console.warn("No se pudieron mapear los días ocupados:", error);
         }
 
-        console.log("Fechas estructuradas para bloquear:", fechasDeshabilitadas);
+        console.log("Fechas validadas finales para deshabilitar en Flatpickr:", fechasDeshabilitadas);
 
-        // Si ya existían instancias de los calendarios, las destruimos para reinicializarlas sin duplicar buffers
         if (fpCheckin) fpCheckin.destroy();
         if (fpCheckout) fpCheckout.destroy();
 
-        // Inicializador para Check-in
+        // Configuración Check-in
         fpCheckin = flatpickr("#checkin", {
             locale: "es",
             minDate: "today",
@@ -123,16 +152,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Inicializador para Check-out
+        // Configuración Check-out
         fpCheckout = flatpickr("#checkout", {
             locale: "es",
             minDate: "today",
             dateFormat: "Y-m-d",
-            disable: fechasDeshabilitadas // Aplicamos el bloqueo de días también al calendario de salida
+            disable: fechasDeshabilitadas
         });
     }
 
-    // Lanzamos la inicialización
     inicializarCalendarios();
 
     // --- 4. Lógica del Formulario de Reserva ---
@@ -182,7 +210,6 @@ document.addEventListener("DOMContentLoaded", function () {
             alert('¡Solicitud enviada! Se abrirá WhatsApp para confirmar la disponibilidad final con Graciela.');
             reservaForm.reset();
             
-            // Re-ejecutamos la sincronización para traer los bloqueos actualizados si los hubiera
             inicializarCalendarios();
 
             btn.disabled = false;
