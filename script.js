@@ -51,43 +51,70 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    // Función auxiliar para normalizar formatos de fecha (p. ej. DD/MM/YYYY a YYYY-MM-DD)
+    function formatearFecha(fechaStr) {
+        if (!fechaStr) return null;
+        let str = String(fechaStr).trim();
+        // Si viene con formato DD/MM/YYYY
+        if (str.includes('/')) {
+            let partes = str.split('/');
+            if (partes[0].length <= 2 && partes[2].length === 4) {
+                return `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+            }
+        }
+        // Si ya viene con formato YYYY-MM-DD o ISO estándar
+        if (str.includes('-')) {
+            return str.split('T')[0];
+        }
+        return str;
+    }
+
     // --- 3. Inicialización y Bloqueo del Calendario en Tiempo Real ---
     async function inicializarCalendarios() {
         let fechasDeshabilitadas = [];
 
         try {
-            // Obtenemos las reservas directamente desde tu Google Sheets
             const respuesta = await fetch(SCRIPT_RESERVAS_URL);
             if (respuesta.ok) {
                 const reservas = await respuesta.json();
+                console.log("Reservas detectadas desde Sheets:", reservas);
                 
-                // Procesamos cada reserva para obtener el rango de días ocupados
                 reservas.forEach(reserva => {
-                    fechasDeshabilitadas.push({
-                        from: reserva.inicio, // Campo que viene de tu script de Google
-                        to: reserva.fin
-                    });
+                    // Tolerancia a mayúsculas/minúsculas en el Sheets (inicio, fin, INICIO, FIN)
+                    let inicioRaw = reserva.inicio || reserva.INICIO || reserva.Inicio;
+                    let finRaw = reserva.fin || reserva.FIN || reserva.Fin;
+
+                    let inicioFormateado = formatearFecha(inicioRaw);
+                    let finFormateado = formatearFecha(finRaw);
+
+                    if (inicioFormateado && finFormateado) {
+                        fechasDeshabilitadas.push({
+                            from: inicioFormateado,
+                            to: finFormateado
+                        });
+                    }
                 });
             }
         } catch (error) {
-            console.warn("No se pudieron cargar las fechas bloqueadas desde la planilla:", error);
+            console.warn("No se pudieron mapear los días ocupados desde la planilla:", error);
         }
 
-        // Configuración para el input de Check-in
+        console.log("Fechas estructuradas para bloquear:", fechasDeshabilitadas);
+
+        // Inicializador para Check-in
         fpCheckin = flatpickr("#checkin", {
             locale: "es",
             minDate: "today",
             dateFormat: "Y-m-d",
             disable: fechasDeshabilitadas,
             onChange: function(selectedDates, dateStr) {
-                // Al elegir check-in, el check-out mínimo pasa a ser el día siguiente
                 if(fpCheckout) {
                     fpCheckout.set("minDate", dateStr || "today");
                 }
             }
         });
 
-        // Configuración para el input de Check-out
+        // Inicializador para Check-out
         fpCheckout = flatpickr("#checkout", {
             locale: "es",
             minDate: "today",
@@ -96,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Ejecutamos la carga y configuración de los calendarios
+    // Lanzamos la inicialización
     inicializarCalendarios();
 
     // --- 4. Lógica del Formulario de Reserva ---
@@ -112,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const telefono = document.getElementById('telefono').value;
 
             if (!checkin || !checkout) {
-                alert("⚠️ Por favor selecciona las fechas de ingreso y salida.");
+                alert("⚠️ Por favor selecciona las fechas de ingreso y salida desde el calendario.");
                 return;
             }
 
@@ -125,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.innerText = 'Enviando a Graciela...';
 
             try {
-                // Registramos los datos en tu planilla de Google Sheets mediante POST
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -136,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error al registrar en Google Sheets:", postError);
             }
 
-            // Armado del mensaje automatizado para WhatsApp
             const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
                             "*NOMBRE:* " + nombre + "\n" +
                             "*TEL:* " + telefono + "\n" +
@@ -148,11 +173,9 @@ document.addEventListener("DOMContentLoaded", function () {
             alert('¡Solicitud enviada! Se abrirá WhatsApp para confirmar la disponibilidad final con Graciela.');
             reservaForm.reset();
             
-            // Limpiamos visualmente los calendarios interactivos
             if(fpCheckin) fpCheckin.clear();
             if(fpCheckout) fpCheckout.clear();
             
-            // Volvemos a sincronizar los calendarios para actualizar bloqueos si hiciera falta
             inicializarCalendarios();
 
             btn.disabled = false;
