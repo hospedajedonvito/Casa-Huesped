@@ -1,190 +1,235 @@
-document.addEventListener("DOMContentLoaded", function () {
-    
-    // URL de tus dos Google Apps Scripts (¡VINCULADAS CORRECTAMENTE!)
-    const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbw-TVssZamZXgKl9m5RFZTsq-8imf7pBE-xKbnsXFWT-kVkMdJ-rrrA-hrNXnS0wE6X/exec';
-    const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
-
-    // --- 1. Control automático del Carrusel superior ---
-    const slides = document.querySelectorAll(".carousel-slide");
-    let currentSlide = 0;
-    const slideInterval = 4000; 
-
-    function nextSlide() {
-        if(slides.length > 0) {
-            slides[currentSlide].style.display = "none"; 
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].style.display = "block";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don Vito | Casa de Huéspedes en Cucullú</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Ajuste necesario para asegurar que las imágenes del carrusel se comporten correctamente */
+        .carousel-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
-    }
-    if(slides.length > 0) {
-        slides.forEach((slide, index) => {
-            slide.style.display = index === 0 ? "block" : "none";
-        });
-        setInterval(nextSlide, slideInterval);
-    }
-
-    // --- 2. Desplazamiento suave para el menú ---
-    const links = document.querySelectorAll(".nav-links a");
-    for (const link of links) {
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute("href");
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                const checkbox = document.getElementById('menu-toggle');
-                if (checkbox) checkbox.checked = false;
-
-                targetSection.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-        });
-    }
-
-    // --- 3. Lógica del Formulario de Reserva ---
-    const reservaForm = document.getElementById('reservaForm');
-    if (reservaForm) {
-        reservaForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviarReserva');
-            
-            const checkin = document.getElementById('checkin').value;
-            const checkout = document.getElementById('checkout').value;
-            const nombre = document.getElementById('nombre').value;
-            const telefono = document.getElementById('telefono').value;
-
-            // Filtro de seguridad inicial
-            if (checkin >= checkout) {
-                alert("⚠️ La fecha de check-out debe ser posterior a la fecha de check-in.");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerText = 'Verificando disponibilidad...';
-
-            let esConflicto = false;
-
-            try {
-                // Buscamos la disponibilidad usando la URL de reservas
-                const respuesta = await fetch(SCRIPT_RESERVAS_URL);
-                if (respuesta.ok) {
-                    const reservas = await respuesta.json();
-
-                    // Comparamos de forma estricta que los rangos de fecha no se superpongan
-                    esConflicto = reservas.some(r => {
-                        return (checkin <= r.fin && checkout >= r.inicio);
-                    });
-                }
-            } catch (error) {
-                console.warn("No se pudo verificar la disponibilidad online de forma estricta:", error);
-            }
-
-            if (esConflicto) {
-                alert("⚠️ Lo sentimos, esas fechas ya están ocupadas o se superponen con otra estadía. Por favor elige otras.");
-                btn.disabled = false;
-                btn.innerText = 'Enviar Solicitud y Reservar';
-                return; 
-            }
-
-            btn.innerText = 'Enviando a Graciela...';
-
-            try {
-                // Intentamos registrar los datos en la planilla mediante POST
-                await fetch(SCRIPT_RESERVAS_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, telefono, checkin, checkout })
-                });
-            } catch (postError) {
-                console.error("Error al registrar en Google Sheets:", postError);
-            }
-
-            // CORRECCIÓN AQUÍ: Se quitaron los emojis propensos a fallar por texto limpio en negritas para WhatsApp
-            const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
-                            "*NOMBRE:* " + nombre + "\n" +
-                            "*TEL:* " + telefono + "\n" +
-                            "*CHECK-IN:* " + checkin + "\n" +
-                            "*CHECK-OUT:* " + checkout;
-            
-            window.open("https://wa.me/5491154523758?text=" + encodeURIComponent(mensaje), '_blank');
-
-            alert('¡Solicitud enviada! Se abrirá WhatsApp para confirmar la disponibilidad final con Graciela.');
-            reservaForm.reset();
-            btn.disabled = false;
-            btn.innerText = 'Enviar Solicitud y Reservar';
-        });
-    }
-
-    // --- 4. Sistema de Opiniones (Cargar y Enviar) ---
-    const listaComentarios = document.getElementById('listaComentarios');
-    const reviewForm = document.getElementById('reviewForm');
-
-    async function cargarComentarios() {
-        if (!listaComentarios) return;
-        try {
-            const respuesta = await fetch(SCRIPT_OPINIONES_URL);
-            const comentarios = await respuesta.json();
-            
-            if(!comentarios || comentarios.length === 0) {
-                listaComentarios.innerHTML = '<p style="text-align:center; color:#888;">Todavía no hay opiniones. ¡Sé el primero!</p>';
-                return;
-            }
-
-            listaComentarios.innerHTML = '';
-            comentarios.forEach(c => {
-                let estrellas = '★'.repeat(c.puntuacion) + '☆'.repeat(5 - c.puntuacion);
-                const card = document.createElement('div');
-                card.className = 'comment-card';
-                card.innerHTML = `
-                    <div class="comment-header">
-                        <span class="comment-name">${c.nombre}</span>
-                        <span class="comment-stars">${estrellas}</span>
-                    </div>
-                    <p class="comment-text">${c.comentario}</p>
-                `;
-                listaComentarios.appendChild(card);
-            });
-        } catch (error) {
-            listaComentarios.innerHTML = '<p style="text-align:center; color:red;">No se pudieron cargar las opiniones.</p>';
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 1;
         }
-    }
+        .carousel-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
 
-    if (reviewForm) {
-        reviewForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviarComentario');
-            btn.disabled = true;
-            btn.innerText = 'Enviando...';
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">DON VITO</a>
+            
+            <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+            <label for="menu-toggle" class="menu-button-label">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
 
-            const datos = {
-                nombre: document.getElementById('formNombre').value,
-                puntuacion: document.querySelector('input[name=\"puntuacion\"]:checked').value,
-                comentario: document.getElementById('formComentario').value
-            };
+            <ul class="nav-links">
+                <li><a href="#servicios">Servicios</a></li>
+                <li><a href="#galeria">Instalaciones</a></li>
+                <li><a href="#informacion">Información</a></li> <li><a href="#reservas">Reservas</a></li>
+                <li><a href="#opiniones">Opiniones</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+                <li><a href="#ubicacion">Ubicación</a></li>
+            </ul>
+        </div>
+    </header>
 
-            try {
-                await fetch(SCRIPT_OPINIONES_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datos)
-                });
+    <section class="hero">
+        <div class="carousel-track">
+            <div class="carousel-slide active" style="background-image: url('https://lh3.googleusercontent.com/d/1Aa-6Lz1VMBpYLUQUIx_fKwkbJbW7UZzR');"></div>
+            <div class="carousel-slide" style="background-image: url('https://lh3.googleusercontent.com/d/1johW35cRm4PPSHdpsFJmHOYoKnlzs47l');"></div>
+        </div>
+        <div class="hero-overlay" style="z-index: 3;">
+            <h1 class="hero-title">Don Vito</h1>
+            <p class="hero-subtitle">Casa de Huéspedes en Cucullú</p>
+            <a href="https://wa.me/5491154523758?text=Hola!%20Me%20gustar%C3%ADa%20hacer%20una%20consulta%20sobre%20el%20hospedaje." class="btn-whatsapp" target="_blank">
+                Para más consultas
+            </a>
+        </div>
+    </section>
+
+    <section class="welcome-section">
+        <p class="welcome-phrase">"Sentite en el campo disfrutando de la naturaleza"</p>
+        <div style="margin-top: 30px; border-radius: 8px; overflow: hidden; height: 400px; background-image: url('https://lh3.googleusercontent.com/d/1Da0FDDNuKApc06Tq_M2L8eTYmUVRhx2g'); background-size: cover; background-position: center;">
+        </div>
+    </section>
+
+    <div class="container">
+
+        <section id="servicios">
+            <h2 class="section-title">Comodidades Destacadas</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Piscina</h3>
+                    <p>Disfrutá del sol y un refrescante baño.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Patio</h3>
+                    <p>Amplio espacio verde para relajarse.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Parking</h3>
+                    <p>Estacionamiento cómodo dentro del predio.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>WiFi Gratis</h3>
+                    <p>Conexión de alta velocidad en toda la casa.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Salamandra a Leña</h3>
+                    <p>Calidez acogedora para los días frescos.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Aire Acondicionado</h3>
+                    <p>Ambiente climatizado para tu mayor confort.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="galeria">
+            <h2 class="section-title">Galería de Fotos</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/16QWKZDevX6XyOoijgker_jiQCejudo-8" alt="Piscina 1"><div class="gallery-info"><h4>Piscina Principal</h4><p>Refrescate y disfrutá del sol en nuestro parque.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1VlyD8bBr6hF9TmUOMPCRZaoKuKo-30wA" alt="Piscina 2"><div class="gallery-info"><h4>Espacio de Relax</h4><p>Momentos de relax rodeados de verde.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1c_sxBmbR9aVeB1fTu9aPkxsZPPNbBBTx" alt="Patio"><div class="gallery-info"><h4>Parque y Patio</h4><p>Extenso jardín para conectar con la tranquilidad.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Qh5aZChQLIwRhvofLozi0afWPiF46Y2L" alt="Parrilla"><div class="gallery-info"><h4>Zona de Parrilla</h4><p>El lugar ideal para compartir un clásico asado argentino.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1_duNvq6ehREPGPxv-yeVoG2Mw5WkcNgb" alt="Living"><div class="gallery-info"><h4>Living Confortable</h4><p>Espacio cálido con salamandra a leña ideal para descansar.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1BZ468sgpI1WP2y3nVAyGXBTUoO3xBh6Z" alt="Garage"><div class="gallery-info"><h4>Sector Garage</h4><p>Espacio semicubierto y seguro para vehículos.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1YWnNLMyA3S62RSE1FZUzqYWjPJnqs2BL" alt="Fogata"><div class="gallery-info"><h4>Fogón Nocturno</h4><p>Perfecto para noches mágicas bajo las estrellas.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1dqRv0ttswNK7iX1wnNElFLAS0TbwGk46" alt="Fogata 2"><div class="gallery-info"><h4>Área de Fogata</h4><p>Reuniones inolvidables al calor del fuego.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1I5qn9ZdiabCoTDkoymgvLff-E8ABj8Wo" alt="Fachada 1"><div class="gallery-info"><h4>Fachada Exterior</h4><p>Estilo rústico y encantador que te da la bienvenida.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1k1rFS4Rb53L1Mq-6rlDGiKmLCCdeHC5G" alt="Fachada 2"><div class="gallery-info"><h4>Fachada Don Vito</h4><p>Arquitectura tradicional integrada con el paisaje rural.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1qYjklR9twbhLw7tj9oMPB02Jc4Lpx_U2" alt="Dormitorio 1"><div class="gallery-info"><h4>Dormitorio Principal</h4><p>Habitaciones confortables diseñadas para un descanso profundo.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1jz2xU264hbogyjA5Q7ViiBhmYBUSmjDj" alt="Dormitorio 2"><div class="gallery-info"><h4>Dormitorio</h4><p>Ambientes luminosos, limpios y perfectamente equipados.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/10eHOdm7vVeLEKzdgzh5tqHOYRZT522mo" alt="Comedor 1"><div class="gallery-info"><h4>Comedor Familiar</h4><p>Mesa amplia para disfrutar de las mejores comidas en familia.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1aUfr3MRWY01pznFmAJTxVo3IGW8aMcLv" alt="Comedor 2"><div class="gallery-info"><h4>Espacio de Reunión</h4><p>Detalles acogedores que te hacen sentir como en casa.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1bsmDY6xtSJ8gY3D13ppiOynv253aahkT" alt="Cocina"><div class="gallery-info"><h4>Cocina Equipada</h4><p>Todo lo necesario para preparar tus platos favoritos.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1tw0wYhz7eQVxyYfyTKlEUiv0IuoBbSEa" alt="Mesada"><div class="gallery-info"><h4>Detalle de Cocina</h4><p>Funcionalidad y comodidad en cada rincón.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1quSjYX8mDlBgkZ9XKl0Qsy1_TYXyBjfn" alt="Baño"><div class="gallery-info"><h4>Baño Completo</h4><p>Higiene, modernidad y confort impecables.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1YXcnvEUyc5zhC2h-Gc6ebliE-bmpJaFe" alt="Galeria 1"><div class="gallery-info"><h4>Galería Exterior</h4><p>Perfecta para tomar unos mates a la tarde.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/16GCQwkMsQWgOP4SGdgObWvv_anQGHsgU" alt="Galeria 2"><div class="gallery-info"><h4>Galería y Sombra</h4><p>Disfrutá del aire libre con total comodidad.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1PvNF-Ip9prsam874GF6sNeyJHA0w56Z_" alt="Horno de Barro"><div class="gallery-info"><h4>Horno de Barro Tradicional</h4><p>Cociná con el sabor único de la tradición del campo.</p></div></div>
                 
-                alert('¡Gracias por tu comentario!');
-                reviewForm.reset();
-                cargarComentarios(); 
-            } catch (error) {
-                alert('Hubo un error al enviar el comentario.');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Enviar Comentario';
-            }
-        });
-    }
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Aa-6Lz1VMBpYLUQUIx_fKwkbJbW7UZzR" alt="Fogata Mágica"><div class="gallery-info"><h4>Fogata Mágica</h4><p>Disfrutá del fuego al aire libre.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1johW35cRm4PPSHdpsFJmHOYoKnlzs47l" alt="Casa de Huéspedes"><div class="gallery-info"><h4>Casa de Huéspedes</h4><p>Nuestra cálida instalación lista para recibirte.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Da0FDDNuKApc06Tq_M2L8eTYmUVRhx2g" alt="Atardecer"><div class="gallery-info"><h4>Atardecer</h4><p>Vistas inigualables del atardecer en el campo.</p></div></div>
+            </div>
+        </section>
 
-    // Ejecución inicial de comentarios
-    cargarComentarios();
-});
+        <section id="informacion" class="info-grid">
+            <div class="info-box">
+                <h3>Horarios de Estadía</h3>
+                <ul class="info-list">
+                    <li><span class="label">Check-in:</span> <span>Desde 15:00 hs</span></li>
+                    <li><span class="label">Check-out:</span> <span>Hasta las 12:00 hs (AM)</span></li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h3>Lugares para Conocer</h3>
+                <ul class="info-list">
+                    <li><span class="label">San Andrés de Giles:</span> <span>13 km</span></li>
+                    <li><span class="label">Carlos Keen:</span> <span>16 km</span></li>
+                    <li><span class="label">Villa Ruiz:</span> <span>22 km</span></li>
+                    <li><span class="label">San Antonio de Areco:</span> <span>38 km</span></li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h3>En el Pueblo de Cucullú</h3>
+                <ul class="info-list">
+                    <li><span class="label">Puntos Turísticos:</span> <span>Estación de Cucullú</span></li>
+                    <li><span class="label">Cultura Local:</span> <span>Tradición alfarera y ladrillera</span></li>
+                    <li><span class="label">Para Comer:</span> <span>Recomendamos visitar Casa Gallo</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="reservas" class="reserva-section">
+            <h2 class="section-title">Solicitar Reserva</h2>
+            <form id="reservaForm" class="reserva-form">
+                <div class="form-group">
+                    <input type="text" id="nombre" placeholder="Nombre y Apellido" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="telefono" placeholder="Teléfono" required>
+                </div>
+                <div class="form-group date-group">
+                    <div>
+                        <label for="checkin">Fecha Check-in:</label>
+                        <input type="date" id="checkin" required>
+                    </div>
+                    <div>
+                        <label for="checkout">Fecha Check-out:</label>
+                        <input type="date" id="checkout" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="btnEnviarReserva">Enviar Solicitud y Reservar</button>
+            </form>
+        </section>
+
+        <section id="opiniones" class="comments-section">
+            <h2 class="section-title">Opiniones de nuestros Huéspedes</h2>
+            <form class="comment-form" id="reviewForm">
+                <h3>Dejanos tu comentario</h3>
+                <input type="text" id="formNombre" placeholder="Tu Nombre" required>
+                <div class="rating-stars">
+                    <input type="radio" id="star5" name="puntuacion" value="5" required><label for="star5">★</label>
+                    <input type="radio" id="star4" name="puntuacion" value="4"><label for="star4">★</label>
+                    <input type="radio" id="star3" name="puntuacion" value="3"><label for="star3">★</label>
+                    <input type="radio" id="star2" name="puntuacion" value="2"><label for="star2">★</label>
+                    <input type="radio" id="star1" name="puntuacion" value="1"><label for="star1">★</label>
+                </div>
+                <textarea id="formComentario" rows="4" placeholder="¿Cómo fue tu experiencia en Don Vito?" required></textarea>
+                <button type="submit" class="btn-submit" id="btnEnviarComentario">Enviar Comentario</button>
+            </form>
+            <div class="comments-list" id="listaComentarios">
+                <p style="text-align:center; color:#888;">Cargando opiniones...</p>
+            </div>
+        </section>
+
+        <section id="contacto" class="contact-section">
+            <h2 class="section-title">Contacto Directo</h2>
+            <div class="contact-box">
+                <p>Ante cualquier consulta o inconveniente, no duden en comunicarse.</p>
+                <div class="anfitriona-title">Anfitriona: Graciela</div>
+                <a href="https://wa.me/5491154523758?text=Hola%20Graciela!%20Me%20comunico%20desde%20la%20p%C3%A1gina%20web%20por%20una%20consulta." class="btn-whatsapp" target="_blank">
+                    WhatsApp: 11 5452-3758
+                </a>
+            </div>
+        </section>
+
+        <section id="ubicacion" class="map-section">
+            <h2 class="section-title">Nuestra Ubicación</h2>
+            <p>Nos encontramos en el pintoresco pueblo rural de Cucullú.</p>
+            <a href="https://www.google.com/maps?q=-34.4467782,-59.3598005&" class="map-btn" target="_blank">Ver en Google Maps</a>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>© 2026 Don Vito - Casa de Huéspedes en Cucullú. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="script.js?v=3"></script>
+</body>
+</html>
