@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts (¡ACTUALIZADA CON TU NUEVO ENLACE!)
+    // URL de tus dos Google Apps Scripts (Asegúrate de cambiarla si generas una nueva implementación)
     const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbw-TVssZamZXgKl9m5RFZTsq-8imf7pBE-xKbnsXFWT-kVkMdJ-rrrA-hrNXnS0wE6X/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- 3. Lógica del Formulario de Reserva ---
+    // --- 3. Lógica del Formulario de Reserva (Manejo de Errores Mejorado) ---
     const reservaForm = document.getElementById('reservaForm');
     if (reservaForm) {
         reservaForm.addEventListener('submit', async (e) => {
@@ -64,52 +64,58 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.disabled = true;
             btn.innerText = 'Verificando disponibilidad...';
 
+            let esConflicto = false;
+
             try {
-                // Buscamos la disponibilidad usando la nueva URL de reservas
+                // Buscamos la disponibilidad usando la URL de reservas
                 const respuesta = await fetch(SCRIPT_RESERVAS_URL);
-                const reservas = await respuesta.json();
+                if (respuesta.ok) {
+                    const reservas = await respuesta.json();
 
-                // Comparamos de forma estricta que los rangos de fecha no se superpongan
-                const esConflicto = reservas.some(r => {
-                    return (checkin <= r.fin && checkout >= r.inicio);
-                });
-
-                if (esConflicto) {
-                    alert("⚠️ Lo sentimos, esas fechas ya están reservadas o se superponen con otra estadía. Por favor elige otras.");
-                    btn.disabled = false;
-                    btn.innerText = 'Enviar Solicitud y Reservar';
-                    return; 
+                    // Comparamos de forma estricta que los rangos de fecha no se superpongan
+                    esConflicto = reservas.some(r => {
+                        return (checkin <= r.fin && checkout >= r.inicio);
+                    });
                 }
+            } catch (error) {
+                // Si falla el GET por problemas de CORS o permisos de Google, imprimimos el error en consola
+                console.warn("No se pudo verificar la disponibilidad online de forma estricta:", error);
+            }
 
-                btn.innerText = 'Enviando a Graciela...';
+            if (esConflicto) {
+                alert("⚠️ Lo sentimos, esas fechas ya están ocupadas o se superponen con otra estadía. Por favor elige otras.");
+                btn.disabled = false;
+                btn.innerText = 'Enviar Solicitud y Reservar';
+                return; 
+            }
 
-                // Enviamos la petición POST al nuevo script de reservas
+            btn.innerText = 'Enviando a Graciela...';
+
+            try {
+                // Intentamos registrar los datos en la planilla mediante POST
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombre, telefono, checkin, checkout })
                 });
-
-                // Construcción sólida del mensaje para WhatsApp sin símbolos extraños
-                const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
-                                "👤 *Nombre:* " + nombre + "\n" +
-                                "📞 *Tel:* " + telefono + "\n" +
-                                "🗓️ *Check-in:* " + checkin + "\n" +
-                                "📅 *Check-out:* " + checkout;
-                
-                window.open("https://wa.me/5491154523758?text=" + encodeURIComponent(mensaje), '_blank');
-
-                alert('¡Solicitud registrada correctamente! Se abrirá WhatsApp para confirmar con Graciela.');
-                reservaForm.reset();
-
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Hubo un error al procesar tu reserva. Intenta nuevamente.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Enviar Solicitud y Reservar';
+            } catch (postError) {
+                console.error("Error al registrar en Google Sheets:", postError);
             }
+
+            // Redirección asegurada a WhatsApp: Esto se ejecutará pase lo que pase con la hoja de cálculo
+            const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
+                            "👤 *Nombre:* " + nombre + "\n" +
+                            "📞 *Tel:* " + telefono + "\n" +
+                            "🗓️ *Check-in:* " + checkin + "\n" +
+                            "📅 *Check-out:* " + checkout;
+            
+            window.open("https://wa.me/5491154523758?text=" + encodeURIComponent(mensaje), '_blank');
+
+            alert('¡Solicitud enviada! Se abrirá WhatsApp para confirmar la disponibilidad final con Graciela.');
+            reservaForm.reset();
+            btn.disabled = false;
+            btn.innerText = 'Enviar Solicitud y Reservar';
         });
     }
 
