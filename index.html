@@ -40,6 +40,14 @@
         .flatpickr-input[readonly] {
             background-color: #ffffff !important;
         }
+        /* Asegura que el contenedor de fechas no rompa el diseño responsive */
+        .date-group {
+            display: flex;
+            gap: 15px;
+        }
+        .date-group > div {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -242,6 +250,7 @@
         <p>© 2026 Don Vito - Casa de Huéspedes en Cucullú. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="script.js?v=4"></script>
+    <!-- Cargamos la versión 5 del script para obligar la recarga del bloqueo de celdas -->
+    <script src="script.js?v=5"></script>
 </body>
 </html>
