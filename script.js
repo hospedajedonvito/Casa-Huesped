@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts (revisa que correspondan a cada uno)
+    // URL de tus dos Google Apps Scripts
     const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbzKyR1N142pR1fm_iU2jlmL8NbrgHimhxFUB3cNLirS_DFHV0X9nt8KZpRPnug6bCsf/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
@@ -11,10 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function nextSlide() {
         if(slides.length > 0) {
-            slides[currentSlide].style.display = "none"; // O control de clases si manejas opacidad
+            slides[currentSlide].style.display = "none"; 
             currentSlide = (currentSlide + 1) % slides.length;
             slides[currentSlide].style.display = "block";
         }
+    }
+    if(slides.length > 0) {
+        setInterval(nextSlide, slideInterval);
     }
 
     // --- 2. Desplazamiento suave para el menú ---
@@ -26,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const targetSection = document.querySelector(targetId);
             
             if (targetSection) {
-                // Desmarcar menú hamburguesa si está abierto en celular
                 const checkbox = document.getElementById('menu-toggle');
                 if (checkbox) checkbox.checked = false;
 
@@ -54,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.innerText = 'Verificando disponibilidad...';
 
             try {
-                // Consultamos las fechas ocupadas (doGet)
+                // Consultamos las fechas ocupadas
                 const respuesta = await fetch(SCRIPT_RESERVAS_URL);
                 const reservas = await respuesta.json();
 
@@ -80,10 +82,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({ nombre, telefono, checkin, checkout })
                 });
 
-                // CONSTRUCCIÓN DEL MENSAJE SIN SÍMBOLOS EXTRAÑOS (Codificación limpia)
-                const mensaje = `Hola Graciela! Quiero realizar una nueva reserva:\n\n👤 *Nombre:* ${nombre}\n📞 *Tel:* ${telefono}\n🗓️ *Check-in:* ${checkin}\n📅 *Check-out:* ${checkout}`;
+                // --- PEDAZO REPARADO: CONSTRUCCIÓN SÓLIDA DEL MENSAJE SIN SÍMBOLOS EXTRAÑOS ---
+                const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
+                                "👤 *Nombre:* " + nombre + "\n" +
+                                "📞 *Tel:* " + telefono + "\n" +
+                                "🗓️ *Check-in:* " + checkin + "\n" +
+                                "📅 *Check-out:* " + checkout;
                 
-                window.open(`https://wa.me/5491154523758?text=${encodeURIComponent(mensaje)}`, '_blank');
+                // Con esta función se eliminan los rombos con signos de pregunta de forma definitiva
+                window.open("https://wa.me/5491154523758?text=" + encodeURIComponent(mensaje), '_blank');
 
                 alert('¡Solicitud registrada correctamente! Se abrirá WhatsApp para confirmar con Graciela.');
                 reservaForm.reset();
