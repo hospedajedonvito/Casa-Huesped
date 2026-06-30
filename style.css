@@ -83,7 +83,7 @@ header {
     color: var(--accent);
 }
 
-/* Hero / Carousel */
+/* Hero / Carousel (CORREGIDO PARA EVITAR RECTÁNGULO NEGRO) */
 .hero {
     position: relative;
     height: 80vh;
@@ -93,24 +93,30 @@ header {
 }
 
 .carousel-track {
-    display: flex;
-    width: 300%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    animation: scrollCarousel 12s infinite ease-in-out;
 }
 
 .carousel-slide {
-    width: 33.333%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
     background-size: cover;
     background-position: center;
-    position: relative;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+    z-index: 1;
 }
 
-@keyframes scrollCarousel {
-    0%, 28% { transform: translateX(0%); }
-    33%, 61% { transform: translateX(-33.333%); }
-    66%, 100% { transform: translateX(-66.666%); }
+/* Clase activa manejada por el JavaScript */
+.carousel-slide.active {
+    opacity: 1;
+    z-index: 2;
 }
 
 .hero-overlay {
@@ -127,7 +133,7 @@ header {
     text-align: center;
     color: var(--white);
     padding: 20px;
-    z-index: 10;
+    z-index: 10; /* Asegura quedar por encima de las imágenes */
 }
 
 .hero-title {
@@ -341,6 +347,7 @@ header {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 15px;
+    background-color: var(--white);
 }
 
 .reserva-form label {
@@ -348,6 +355,8 @@ header {
     color: var(--text);
     font-size: 14px;
     text-align: left;
+    display: block;
+    margin-bottom: 5px;
 }
 
 .date-group {
@@ -556,57 +565,6 @@ footer {
     .menu-checkbox:checked ~ .menu-button-label span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
     .menu-checkbox:checked ~ .menu-button-label span:nth-child(2) { opacity: 0; }
     .menu-checkbox:checked ~ .menu-button-label span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-}
-/* --- ESTILOS COMPLEMENTARIOS PARA EL FORMULARIO DE RESERVA --- */
-.reserva-section {
-    background: var(--white);
-    padding: 40px 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-    margin-bottom: 60px;
-}
-
-.reserva-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-    background: var(--bg-light);
-    padding: 30px;
-    border-radius: 8px;
-}
-
-.reserva-form .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.reserva-form input[type="text"],
-.reserva-form input[type="tel"],
-.reserva-form input[type="date"] {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 15px;
-    background-color: var(--white);
-}
-
-.reserva-form label {
-    font-weight: bold;
-    color: var(--text);
-    font-size: 14px;
-    text-align: left;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.date-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
 }
 
 @media (max-width: 480px) {
