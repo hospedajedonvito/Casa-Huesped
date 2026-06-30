@@ -5,7 +5,7 @@
     --text: #2c302e;
     --bg-light: #f7f5f0;
     --white: #ffffff;
-    --dark-nav: #1a1a1a; /* El color oscuro que se ve en la foto image_427ec7.jpg */
+    --dark-nav: #1a1a1a;
 }
 
 * {
@@ -22,7 +22,7 @@ body {
 }
 
 header {
-    background-color: var(--dark-nav); /* Fondo oscuro como en tu captura */
+    background-color: var(--dark-nav);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
@@ -42,12 +42,11 @@ header {
 .logo {
     font-size: 24px;
     font-weight: bold;
-    color: #dbdbd5; /* Tono claro para contrastar con el fondo oscuro */
+    color: #dbdbd5;
     text-decoration: none;
     letter-spacing: 1px;
 }
 
-/* Ocultar elementos del menú interactivo en Computadoras */
 .menu-checkbox {
     display: none;
 }
@@ -308,6 +307,55 @@ header {
     color: var(--text);
 }
 
+/* Reserva Section Estilizada */
+.reserva-section {
+    background: var(--white);
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 60px;
+}
+
+.reserva-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--bg-light);
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.reserva-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.reserva-form input[type="text"],
+.reserva-form input[type="tel"],
+.reserva-form input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+
+.reserva-form label {
+    font-weight: bold;
+    color: var(--text);
+    font-size: 14px;
+    text-align: left;
+}
+
+.date-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
 /* Maps Section */
 .map-section {
     background: var(--white);
@@ -395,7 +443,7 @@ header {
     background-color: var(--primary);
     color: white;
     border: none;
-    padding: 12px;
+    padding: 14px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
@@ -442,6 +490,34 @@ header {
     font-size: 15px;
 }
 
+/* Contact Box */
+.contact-section {
+    background: var(--white);
+    padding: 40px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    margin-bottom: 60px;
+    text-align: center;
+}
+
+.contact-box {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-box p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.anfitriona-title {
+    font-size: 20px;
+    color: var(--primary-dark);
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
 footer {
     background-color: var(--primary-dark);
     color: var(--white);
@@ -450,65 +526,34 @@ footer {
     margin-top: 40px;
 }
 
-/* --- NUEVO MENÚ DESPLEGABLE EN CELULARES (RESPONSIVE) --- */
+/* Responsive */
 @media (max-width: 768px) {
     .hero-title { font-size: 34px; }
     .hero-subtitle { font-size: 16px; }
-    
-    .nav-container {
-        padding: 15px 20px;
-    }
+    .nav-container { padding: 15px 20px; }
+    .menu-button-label { display: flex; z-index: 1002; }
+    .date-group { grid-template-columns: 1fr; }
 
-    /* Muestra el botón de hamburguesa (las 3 rayitas) */
-    .menu-button-label {
-        display: flex;
-        z-index: 1002;
-    }
-
-    /* Oculta los links por defecto y los prepara en modo menú vertical */
     .nav-links {
         display: none; 
         flex-direction: column;
         position: absolute;
-        top: 100%; /* Aparece justo abajo de la barra negra principal */
+        top: 100%; 
         left: 0;
         width: 100%;
-        background-color: var(--dark-nav); /* Sigue la estética negra de la cabecera */
+        background-color: var(--dark-nav); 
         padding: 10px 0;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         gap: 0;
         z-index: 1001;
     }
 
-    .nav-links li {
-        width: 100%;
-        text-align: center;
-    }
+    .nav-links li { width: 100%; text-align: center; }
+    .nav-links a { display: block; padding: 15px 0; font-size: 16px; border-bottom: 1px solid #2d2d2d; }
+    .nav-links li:last-child a { border-bottom: none; }
+    .menu-checkbox:checked ~ .nav-links { display: flex; }
 
-    .nav-links a {
-        display: block;
-        padding: 15px 0;
-        font-size: 16px;
-        border-bottom: 1px solid #2d2d2d; /* Separador sutil para que quede súper organizado */
-    }
-    
-    .nav-links li:last-child a {
-        border-bottom: none;
-    }
-
-    /* TRUCO CSS: Cuando tocan las rayitas (el checkbox se activa), se despliega la lista */
-    .menu-checkbox:checked ~ .nav-links {
-        display: flex;
-    }
-
-    /* Animación simple en las 3 rayitas al abrir el menú */
-    .menu-checkbox:checked ~ .menu-button-label span:nth-child(1) {
-        transform: rotate(45deg) translate(6px, 6px);
-    }
-    .menu-checkbox:checked ~ .menu-button-label span:nth-child(2) {
-        opacity: 0;
-    }
-    .menu-checkbox:checked ~ .menu-button-label span:nth-child(3) {
-        transform: rotate(-45deg) translate(5px, -5px);
-    }
+    .menu-checkbox:checked ~ .menu-button-label span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .menu-checkbox:checked ~ .menu-button-label span:nth-child(2) { opacity: 0; }
+    .menu-checkbox:checked ~ .menu-button-label span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 }
