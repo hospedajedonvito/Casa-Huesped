@@ -1,27 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts (¡VINCULADAS CORRECTAMENTE!)
+    // URL de tus dos Google Apps Scripts
     const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbw-TVssZamZXgKl9m5RFZTsq-8imf7pBE-xKbnsXFWT-kVkMdJ-rrrA-hrNXnS0wE6X/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
-    // --- 1. Control automático del Carrusel superior (CORREGIDO PARA EVITAR PANTALLA NEGRA) ---
+    // Variables globales para los calendarios interactivos
+    let fpCheckin, fpCheckout;
+
+    // --- 1. Control automático del Carrusel superior ---
     const slides = document.querySelectorAll(".carousel-slide");
     let currentSlide = 0;
     const slideInterval = 4000; 
 
     function nextSlide() {
         if(slides.length > 0) {
-            // Removemos la clase activa de la imagen actual
             slides[currentSlide].classList.remove("active");
-            // Calculamos el índice de la siguiente imagen de forma segura
             currentSlide = (currentSlide + 1) % slides.length;
-            // Añadimos la clase activa a la nueva imagen
             slides[currentSlide].classList.add("active");
         }
     }
     
     if(slides.length > 0) {
-        // Aseguramos que solo la primera tenga la clase activa al arrancar
         slides.forEach((slide, index) => {
             if (index === 0) {
                 slide.classList.add("active");
@@ -52,7 +51,55 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- 3. Lógica del Formulario de Reserva ---
+    // --- 3. Inicialización y Bloqueo del Calendario en Tiempo Real ---
+    async function inicializarCalendarios() {
+        let fechasDeshabilitadas = [];
+
+        try {
+            // Obtenemos las reservas directamente desde tu Google Sheets
+            const respuesta = await fetch(SCRIPT_RESERVAS_URL);
+            if (respuesta.ok) {
+                const reservas = await respuesta.json();
+                
+                // Procesamos cada reserva para obtener el rango de días ocupados
+                reservas.forEach(reserva => {
+                    fechasDeshabilitadas.push({
+                        from: reserva.inicio, // Campo que viene de tu script de Google
+                        to: reserva.fin
+                    });
+                });
+            }
+        } catch (error) {
+            console.warn("No se pudieron cargar las fechas bloqueadas desde la planilla:", error);
+        }
+
+        // Configuración para el input de Check-in
+        fpCheckin = flatpickr("#checkin", {
+            locale: "es",
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            disable: fechasDeshabilitadas,
+            onChange: function(selectedDates, dateStr) {
+                // Al elegir check-in, el check-out mínimo pasa a ser el día siguiente
+                if(fpCheckout) {
+                    fpCheckout.set("minDate", dateStr || "today");
+                }
+            }
+        });
+
+        // Configuración para el input de Check-out
+        fpCheckout = flatpickr("#checkout", {
+            locale: "es",
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            disable: fechasDeshabilitadas
+        });
+    }
+
+    // Ejecutamos la carga y configuración de los calendarios
+    inicializarCalendarios();
+
+    // --- 4. Lógica del Formulario de Reserva ---
     const reservaForm = document.getElementById('reservaForm');
     if (reservaForm) {
         reservaForm.addEventListener('submit', async (e) => {
@@ -64,43 +111,21 @@ document.addEventListener("DOMContentLoaded", function () {
             const nombre = document.getElementById('nombre').value;
             const telefono = document.getElementById('telefono').value;
 
-            // Filtro de seguridad inicial
+            if (!checkin || !checkout) {
+                alert("⚠️ Por favor selecciona las fechas de ingreso y salida.");
+                return;
+            }
+
             if (checkin >= checkout) {
                 alert("⚠️ La fecha de check-out debe ser posterior a la fecha de check-in.");
                 return;
             }
 
             btn.disabled = true;
-            btn.innerText = 'Verificando disponibilidad...';
-
-            let esConflicto = false;
-
-            try {
-                // Buscamos la disponibilidad usando la URL de reservas
-                const respuesta = await fetch(SCRIPT_RESERVAS_URL);
-                if (respuesta.ok) {
-                    const reservas = await respuesta.json();
-
-                    // Comparamos de forma estricta que los rangos de fecha no se superpongan
-                    esConflicto = reservas.some(r => {
-                        return (checkin <= r.fin && checkout >= r.inicio);
-                    });
-                }
-            } catch (error) {
-                console.warn("No se pudo verificar la disponibilidad online de forma estricta:", error);
-            }
-
-            if (esConflicto) {
-                alert("⚠️ Lo sentimos, esas fechas ya están ocupadas o se superponen con otra estadía. Por favor elige otras.");
-                btn.disabled = false;
-                btn.innerText = 'Enviar Solicitud y Reservar';
-                return; 
-            }
-
             btn.innerText = 'Enviando a Graciela...';
 
             try {
-                // Intentamos registrar los datos en la planilla mediante POST
+                // Registramos los datos en tu planilla de Google Sheets mediante POST
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -111,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error al registrar en Google Sheets:", postError);
             }
 
+            // Armado del mensaje automatizado para WhatsApp
             const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
                             "*NOMBRE:* " + nombre + "\n" +
                             "*TEL:* " + telefono + "\n" +
@@ -121,12 +147,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
             alert('¡Solicitud enviada! Se abrirá WhatsApp para confirmar la disponibilidad final con Graciela.');
             reservaForm.reset();
+            
+            // Limpiamos visualmente los calendarios interactivos
+            if(fpCheckin) fpCheckin.clear();
+            if(fpCheckout) fpCheckout.clear();
+            
+            // Volvemos a sincronizar los calendarios para actualizar bloqueos si hiciera falta
+            inicializarCalendarios();
+
             btn.disabled = false;
             btn.innerText = 'Enviar Solicitud y Reservar';
         });
     }
 
-    // --- 4. Sistema de Opiniones (Cargar y Enviar) ---
+    // --- 5. Sistema de Opiniones (Cargar y Enviar) ---
     const listaComentarios = document.getElementById('listaComentarios');
     const reviewForm = document.getElementById('reviewForm');
 
@@ -169,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const datos = {
                 nombre: document.getElementById('formNombre').value,
-                puntuacion: document.querySelector('input[name=\"puntuacion\"]:checked').value,
+                puntuacion: document.querySelector('input[name="puntuacion"]:checked').value,
                 comentario: document.getElementById('formComentario').value
             };
 
@@ -193,6 +227,5 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Ejecución inicial de comentarios
     cargarComentarios();
 });
