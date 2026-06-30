@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts (¡VINCULADAS CORRECTAMENTE!)
-    const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbzKyR1N142pR1fm_iU2jlmL8NbrgHimhxFUB3cNLirS_DFHV0X9nt8KZpRPnug6bCsf/exec';
+    // URL de tus dos Google Apps Scripts (¡ACTUALIZADA CON TU NUEVO ENLACE!)
+    const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbw-TVssZamZXgKl9m5RFZTsq-8imf7pBE-xKbnsXFWT-kVkMdJ-rrrA-hrNXnS0wE6X/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
     // --- 1. Control automático del Carrusel superior ---
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // --- 3. Lógica del Formulario de Reserva (CAMBIADO Y OPTIMIZADO) ---
+    // --- 3. Lógica del Formulario de Reserva ---
     const reservaForm = document.getElementById('reservaForm');
     if (reservaForm) {
         reservaForm.addEventListener('submit', async (e) => {
@@ -65,11 +65,11 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.innerText = 'Verificando disponibilidad...';
 
             try {
-                // Buscamos la disponibilidad usando la variable correcta
+                // Buscamos la disponibilidad usando la nueva URL de reservas
                 const respuesta = await fetch(SCRIPT_RESERVAS_URL);
                 const reservas = await respuesta.json();
 
-                // CORRECCIÓN: Comparamos de forma estricta que los rangos de fecha no se superpongan
+                // Comparamos de forma estricta que los rangos de fecha no se superpongan
                 const esConflicto = reservas.some(r => {
                     return (checkin <= r.fin && checkout >= r.inicio);
                 });
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 btn.innerText = 'Enviando a Graciela...';
 
-                // Enviamos la petición POST al script de reservas
+                // Enviamos la petición POST al nuevo script de reservas
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
