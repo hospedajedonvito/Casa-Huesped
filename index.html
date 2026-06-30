@@ -48,6 +48,34 @@
         .date-group > div {
             flex: 1;
         }
+
+        /* MEJORAS ESTÉTICAS PARA EL MENÚ RESPONSIVE (Celulares) */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 15px;
+            box-sizing: border-box;
+        }
+        .logo {
+            font-size: 1.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80%;
+        }
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.05rem; /* Achica el texto lo justo y necesario para que entre en una línea */
+                letter-spacing: 0.5px;
+            }
+            .menu-button-label {
+                margin-right: 5px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -66,7 +94,7 @@
             <ul class="nav-links">
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Instalaciones</a></li>
-                <li><a href="#informacion">Information</a></li> 
+                <li><a href="#informacion">Información</a></li> 
                 <li><a href="#reservas">Reservas</a></li>
                 <li><a href="#opiniones">Opiniones</a></li>
                 <li><a href="#contacto">Contacto</a></li>
