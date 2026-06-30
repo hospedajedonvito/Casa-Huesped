@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don Vito | Casa de Huéspedes en Cucullú</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Ajuste necesario para asegurar que las imágenes del carrusel se comporten correctamente */
+        .carousel-track {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 1;
+        }
+        .carousel-slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,8 +47,7 @@
             <ul class="nav-links">
                 <li><a href="#servicios">Servicios</a></li>
                 <li><a href="#galeria">Instalaciones</a></li>
-                <li><a href="#informacion">Information</a></li>
-                <li><a href="#reservas">Reservas</a></li>
+                <li><a href="#informacion">Información</a></li> <li><a href="#reservas">Reservas</a></li>
                 <li><a href="#opiniones">Opiniones</a></li>
                 <li><a href="#contacto">Contacto</a></li>
                 <li><a href="#ubicacion">Ubicación</a></li>
@@ -33,11 +57,10 @@
 
     <section class="hero">
         <div class="carousel-track">
-            <!-- Carrusel con las nuevas fotos solicitadas -->
-            <div class="carousel-slide" style="background-image: url('https://lh3.googleusercontent.com/d/1Aa-6Lz1VMBpYLUQUIx_fKwkbJbW7UZzR');"></div>
+            <div class="carousel-slide active" style="background-image: url('https://lh3.googleusercontent.com/d/1Aa-6Lz1VMBpYLUQUIx_fKwkbJbW7UZzR');"></div>
             <div class="carousel-slide" style="background-image: url('https://lh3.googleusercontent.com/d/1johW35cRm4PPSHdpsFJmHOYoKnlzs47l');"></div>
         </div>
-        <div class="hero-overlay">
+        <div class="hero-overlay" style="z-index: 3;">
             <h1 class="hero-title">Don Vito</h1>
             <p class="hero-subtitle">Casa de Huéspedes en Cucullú</p>
             <a href="https://wa.me/5491154523758?text=Hola!%20Me%20gustar%C3%ADa%20hacer%20una%20consulta%20sobre%20el%20hospedaje." class="btn-whatsapp" target="_blank">
@@ -48,7 +71,6 @@
 
     <section class="welcome-section">
         <p class="welcome-phrase">"Sentite en el campo disfrutando de la naturaleza"</p>
-        <!-- Imagen de bienvenida actualizada con la foto del Atardecer -->
         <div style="margin-top: 30px; border-radius: 8px; overflow: hidden; height: 400px; background-image: url('https://lh3.googleusercontent.com/d/1Da0FDDNuKApc06Tq_M2L8eTYmUVRhx2g'); background-size: cover; background-position: center;">
         </div>
     </section>
@@ -109,7 +131,6 @@
                 <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/16GCQwkMsQWgOP4SGdgObWvv_anQGHsgU" alt="Galeria 2"><div class="gallery-info"><h4>Galería y Sombra</h4><p>Disfrutá del aire libre con total comodidad.</p></div></div>
                 <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1PvNF-Ip9prsam874GF6sNeyJHA0w56Z_" alt="Horno de Barro"><div class="gallery-info"><h4>Horno de Barro Tradicional</h4><p>Cociná con el sabor único de la tradición del campo.</p></div></div>
                 
-                <!-- Nuevas imágenes agregadas a la galería -->
                 <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Aa-6Lz1VMBpYLUQUIx_fKwkbJbW7UZzR" alt="Fogata Mágica"><div class="gallery-info"><h4>Fogata Mágica</h4><p>Disfrutá del fuego al aire libre.</p></div></div>
                 <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1johW35cRm4PPSHdpsFJmHOYoKnlzs47l" alt="Casa de Huéspedes"><div class="gallery-info"><h4>Casa de Huéspedes</h4><p>Nuestra cálida instalación lista para recibirte.</p></div></div>
                 <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Da0FDDNuKApc06Tq_M2L8eTYmUVRhx2g" alt="Atardecer"><div class="gallery-info"><h4>Atardecer</h4><p>Vistas inigualables del atardecer en el campo.</p></div></div>
@@ -209,6 +230,6 @@
         <p>© 2026 Don Vito - Casa de Huéspedes en Cucullú. Todos los derechos reservados.</p>
     </footer>
 
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>
