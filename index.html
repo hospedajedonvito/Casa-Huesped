@@ -4,555 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don Vito | Casa de Huéspedes en Cucullú</title>
-    <style>
-        :root {
-            --primary: #5c6754;
-            --primary-dark: #3e4738;
-            --accent: #c2a67a;
-            --text: #2c302e;
-            --bg-light: #f7f5f0;
-            --white: #ffffff;
-            --dark-nav: #1a1a1a; /* Color oscuro para la barra de navegación */
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        header {
-            background-color: var(--dark-nav);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #dbdbd5;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
-
-        /* Elementos del menú hamburguesa ocultos en PC */
-        .menu-checkbox {
-            display: none;
-        }
-
-        .menu-button-label {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .menu-button-label span {
-            background-color: #ffffff;
-            height: 3px;
-            width: 28px;
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #e0e0e0;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--accent);
-        }
-
-        /* Hero / Carousel */
-        .hero {
-            position: relative;
-            height: 80vh;
-            min-height: 500px;
-            overflow: hidden;
-            background-color: #333;
-        }
-
-        .carousel-track {
-            display: flex;
-            width: 300%;
-            height: 100%;
-            animation: scrollCarousel 12s infinite ease-in-out;
-        }
-
-        .carousel-slide {
-            width: 33.333%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-        }
-
-        @keyframes scrollCarousel {
-            0%, 28% { transform: translateX(0%); }
-            33%, 61% { transform: translateX(-33.333%); }
-            66%, 100% { transform: translateX(-66.666%); }
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--white);
-            padding: 20px;
-            z-index: 10;
-        }
-
-        .hero-title {
-            font-size: 48px;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            font-weight: 700;
-        }
-
-        .hero-subtitle {
-            font-size: 24px;
-            margin-bottom: 30px;
-            font-weight: 300;
-            color: #f0f0f0;
-        }
-
-        .btn-whatsapp {
-            display: inline-flex;
-            align-items: center;
-            background-color: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 18px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-            transition: transform 0.3s, background-color 0.3s;
-        }
-
-        .btn-whatsapp:hover {
-            transform: translateY(-2px);
-            background-color: #20ba5a;
-        }
-
-        /* Welcome Section */
-        .welcome-section {
-            max-width: 900px;
-            margin: 60px auto;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .welcome-phrase {
-            font-size: 28px;
-            color: var(--primary);
-            font-style: italic;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px 60px 20px;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 32px;
-            color: var(--primary-dark);
-            margin-bottom: 40px;
-            position: relative;
-            padding-bottom: 10px;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 3px;
-            background-color: var(--accent);
-        }
-
-        /* Features */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 60px;
-        }
-
-        .feature-card {
-            background: var(--white);
-            padding: 25px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-            border-top: 4px solid var(--primary);
-        }
-
-        .feature-card h3 {
-            color: var(--primary-dark);
-            margin-bottom: 10px;
-        }
-
-        /* Gallery */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 60px;
-        }
-
-        .gallery-item {
-            background: var(--white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            transition: transform 0.3s;
-        }
-
-        .gallery-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .gallery-img {
-            width: 100%;
-            height: 240px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .gallery-info {
-            padding: 15px;
-        }
-
-        .gallery-info h4 {
-            color: var(--primary-dark);
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .gallery-info p {
-            font-size: 14px;
-            color: #777;
-        }
-
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-
-        .info-box {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-        }
-
-        .info-box h3 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--bg-light);
-            padding-bottom: 10px;
-        }
-
-        .info-list {
-            list-style: none;
-        }
-
-        .info-list li {
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .info-list li span.label {
-            font-weight: bold;
-            color: var(--text);
-        }
-
-        /* Calendar Section */
-        .reserva-section { background: var(--white); padding: 40px 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); margin-bottom: 60px; text-align: center; }
-        .calendar-container { max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-        .calendar-iframe { width: 100%; height: 500px; border: none; }
-
-        /* Contact Section */
-        .contact-section {
-            background: var(--white);
-            padding: 40px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            margin-bottom: 60px;
-            text-align: center;
-        }
-
-        .contact-box {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .contact-box p {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .anfitriona-title {
-            font-size: 20px;
-            color: var(--primary-dark);
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
-        /* Maps Section */
-        .map-section {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            margin-bottom: 60px;
-            text-align: center;
-        }
-
-        .map-btn {
-            display: inline-block;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 4px;
-            font-weight: 600;
-            margin-top: 15px;
-            transition: background-color 0.3s;
-        }
-
-        .map-btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        /* Comments Section */
-        .comments-section {
-            background: var(--white);
-            padding: 40px 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            margin-bottom: 60px;
-        }
-
-        .comment-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            background: var(--bg-light);
-            padding: 25px;
-            border-radius: 8px;
-        }
-
-        .comment-form h3 {
-            color: var(--primary-dark);
-            margin-bottom: 5px;
-        }
-
-        .comment-form input, .comment-form textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 15px;
-        }
-
-        .rating-stars {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 5px;
-        }
-
-        .rating-stars input {
-            display: none;
-        }
-
-        .rating-stars label {
-            font-size: 30px;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .rating-stars input:checked ~ label,
-        .rating-stars label:hover,
-        .rating-stars label:hover ~ label {
-            color: #ffc107;
-        }
-
-        .btn-submit {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .comments-list {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .comment-card {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 20px;
-        }
-
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .comment-name {
-            font-weight: bold;
-            color: var(--primary-dark);
-        }
-
-        .comment-stars {
-            color: #ffc107;
-            font-size: 18px;
-        }
-
-        .comment-text {
-            color: #555;
-            font-size: 15px;
-        }
-
-        footer {
-            background-color: var(--primary-dark);
-            color: var(--white);
-            text-align: center;
-            padding: 30px;
-            margin-top: 40px;
-        }
-
-        /* --- MENÚ DESPLEGABLE EXCLUSIVO PARA CELULARES --- */
-        @media (max-width: 768px) {
-            .hero-title { font-size: 34px; }
-            .hero-subtitle { font-size: 16px; }
-            
-            .nav-container {
-                padding: 15px 20px;
-            }
-
-            /* Muestra las 3 rayitas del menú hamburguesa */
-            .menu-button-label {
-                display: flex;
-                z-index: 1002;
-            }
-
-            /* Convierte la lista en un menú vertical oculto por defecto */
-            .nav-links {
-                display: none; 
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--dark-nav);
-                padding: 10px 0;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                gap: 0;
-                z-index: 1001;
-            }
-
-            .nav-links li {
-                width: 100%;
-                text-align: center;
-            }
-
-            .nav-links a {
-                display: block;
-                padding: 15px 0;
-                font-size: 16px;
-                border-bottom: 1px solid #2d2d2d;
-            }
-            
-            .nav-links li:last-child a {
-                border-bottom: none;
-            }
-
-            /* Muestra el menú vertical cuando se hace clic en las 3 rayitas */
-            .menu-checkbox:checked ~ .nav-links {
-                display: flex;
-            }
-
-            /* Animación para convertir las 3 rayitas en una "X" al abrir */
-            .menu-checkbox:checked ~ .menu-button-label span:nth-child(1) {
-                transform: rotate(45deg) translate(6px, 6px);
-            }
-            .menu-checkbox:checked ~ .menu-button-label span:nth-child(2) {
-                opacity: 0;
-            }
-            .menu-checkbox:checked ~ .menu-button-label span:nth-child(3) {
-                transform: rotate(-45deg) translate(5px, -5px);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -560,7 +12,6 @@
         <div class="nav-container">
             <a href="#" class="logo">DON VITO</a>
             
-            <!-- Checkbox y botón del menú hamburguesa -->
             <input type="checkbox" id="menu-toggle" class="menu-checkbox">
             <label for="menu-toggle" class="menu-button-label">
                 <span></span>
@@ -636,167 +87,26 @@
         <section id="galeria">
             <h2 class="section-title">Galería de Fotos</h2>
             <div class="gallery-grid">
-                
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/16QWKZDevX6XyOoijgker_jiQCejudo-8" alt="Piscina 1">
-                    <div class="gallery-info">
-                        <h4>Piscina Principal</h4>
-                        <p>Refrescate y disfrutá del sol en nuestro parque.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1VlyD8bBr6hF9TmUOMPCRZaoKuKo-30wA" alt="Piscina 2">
-                    <div class="gallery-info">
-                        <h4>Espacio de Relax</h4>
-                        <p>Momentos de relax rodeados de verde.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1c_sxBmbR9aVeB1fTu9aPkxsZPPNbBBTx" alt="Patio">
-                    <div class="gallery-info">
-                        <h4>Parque y Patio</h4>
-                        <p>Extenso jardín para conectar con la tranquilidad.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Qh5aZChQLIwRhvofLozi0afWPiF46Y2L" alt="Parrilla">
-                    <div class="gallery-info">
-                        <h4>Zona de Parrilla</h4>
-                        <p>El lugar ideal para compartir un clásico asado argentino.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1_duNvq6ehREPGPxv-yeVoG2Mw5WkcNgb" alt="Living">
-                    <div class="gallery-info">
-                        <h4>Living Confortable</h4>
-                        <p>Espacio cálido con salamandra a leña ideal para descansar.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1BZ468sgpI1WP2y3nVAyGXBTUoO3xBh6Z" alt="Garage">
-                    <div class="gallery-info">
-                        <h4>Sector Garage</h4>
-                        <p>Espacio semicubierto y seguro para vehículos.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1YWnNLMyA3S62RSE1FZUzqYWjPJnqs2BL" alt="Fogata">
-                    <div class="gallery-info">
-                        <h4>Fogón Nocturno</h4>
-                        <p>Perfecto para noches mágicas bajo las estrellas.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1dqRv0ttswNK7iX1wnNElFLAS0TbwGk46" alt="Fogata 2">
-                    <div class="gallery-info">
-                        <h4>Área de Fogata</h4>
-                        <p>Reuniones inolvidables al calor del fuego.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1I5qn9ZdiabCoTDkoymgvLff-E8ABj8Wo" alt="Fachada 1">
-                    <div class="gallery-info">
-                        <h4>Fachada Exterior</h4>
-                        <p>Estilo rústico y encantador que te da la bienvenida.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1k1rFS4Rb53L1Mq-6rlDGiKmLCCdeHC5G" alt="Fachada 2">
-                    <div class="gallery-info">
-                        <h4>Fachada Don Vito</h4>
-                        <p>Arquitectura tradicional integrada con el paisaje rural.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1qYjklR9twbhLw7tj9oMPB02Jc4Lpx_U2" alt="Dormitorio 1">
-                    <div class="gallery-info">
-                        <h4>Dormitorio Principal</h4>
-                        <p>Habitaciones confortables diseñadas para un descanso profundo.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1jz2xU264hbogyjA5Q7ViiBhmYBUSmjDj" alt="Dormitorio 2">
-                    <div class="gallery-info">
-                        <h4>Dormitorio</h4>
-                        <p>Ambientes luminosos, limpios y perfectamente equipados.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/10eHOdm7vVeLEKzdgzh5tqHOYRZT522mo" alt="Comedor 1">
-                    <div class="gallery-info">
-                        <h4>Comedor Familiar</h4>
-                        <p>Mesa amplia para disfrutar de las mejores comidas en familia.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1aUfr3MRWY01pznFmAJTxVo3IGW8aMcLv" alt="Comedor 2">
-                    <div class="gallery-info">
-                        <h4>Espacio de Reunión</h4>
-                        <p>Detalles acogedores que te hacen sentir como en casa.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1bsmDY6xtSJ8gY3D13ppiOynv253aahkT" alt="Cocina">
-                    <div class="gallery-info">
-                        <h4>Cocina Equipada</h4>
-                        <p>Todo lo necesario para preparar tus platos favoritos.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1tw0wYhz7eQVxyYfyTKlEUiv0IuoBbSEa" alt="Mesada">
-                    <div class="gallery-info">
-                        <h4>Detalle de Cocina</h4>
-                        <p>Funcionalidad y comodidad en cada rincón.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1quSjYX8mDlBgkZ9XKl0Qsy1_TYXyBjfn" alt="Baño">
-                    <div class="gallery-info">
-                        <h4>Baño Completo</h4>
-                        <p>Higiene, modernidad y confort impecables.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1YXcnvEUyc5zhC2h-Gc6ebliE-bmpJaFe" alt="Galeria 1">
-                    <div class="gallery-info">
-                        <h4>Galería Exterior</h4>
-                        <p>Perfecta para tomar unos mates a la tarde.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/16GCQwkMsQWgOP4SGdgObWvv_anQGHsgU" alt="Galeria 2">
-                    <div class="gallery-info">
-                        <h4>Galería y Sombra</h4>
-                        <p>Disfrutá del aire libre con total comodidad.</p>
-                    </div>
-                </div>
-
-                <div class="gallery-item">
-                    <img class="gallery-img" src="https://lh3.googleusercontent.com/d/1PvNF-Ip9prsam874GF6sNeyJHA0w56Z_" alt="Horno de Barro">
-                    <div class="gallery-info">
-                        <h4>Horno de Barro Tradicional</h4>
-                        <p>Cociná con el sabor único de la tradición del campo.</p>
-                    </div>
-                </div>
-
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/16QWKZDevX6XyOoijgker_jiQCejudo-8" alt="Piscina 1"><div class="gallery-info"><h4>Piscina Principal</h4><p>Refrescate y disfrutá del sol en nuestro parque.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1VlyD8bBr6hF9TmUOMPCRZaoKuKo-30wA" alt="Piscina 2"><div class="gallery-info"><h4>Espacio de Relax</h4><p>Momentos de relax rodeados de verde.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1c_sxBmbR9aVeB1fTu9aPkxsZPPNbBBTx" alt="Patio"><div class="gallery-info"><h4>Parque y Patio</h4><p>Extenso jardín para conectar con la tranquilidad.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1Qh5aZChQLIwRhvofLozi0afWPiF46Y2L" alt="Parrilla"><div class="gallery-info"><h4>Zona de Parrilla</h4><p>El lugar ideal para compartir un clásico asado argentino.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1_duNvq6ehREPGPxv-yeVoG2Mw5WkcNgb" alt="Living"><div class="gallery-info"><h4>Living Confortable</h4><p>Espacio cálido con salamandra a leña ideal para descansar.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1BZ468sgpI1WP2y3nVAyGXBTUoO3xBh6Z" alt="Garage"><div class="gallery-info"><h4>Sector Garage</h4><p>Espacio semicubierto y seguro para vehículos.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1YWnNLMyA3S62RSE1FZUzqYWjPJnqs2BL" alt="Fogata"><div class="gallery-info"><h4>Fogón Nocturno</h4><p>Perfecto para noches mágicas bajo las estrellas.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1dqRv0ttswNK7iX1wnNElFLAS0TbwGk46" alt="Fogata 2"><div class="gallery-info"><h4>Área de Fogata</h4><p>Reuniones inolvidables al calor del fuego.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1I5qn9ZdiabCoTDkoymgvLff-E8ABj8Wo" alt="Fachada 1"><div class="gallery-info"><h4>Fachada Exterior</h4><p>Estilo rústico y encantador que te da la bienvenida.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1k1rFS4Rb53L1Mq-6rlDGiKmLCCdeHC5G" alt="Fachada 2"><div class="gallery-info"><h4>Fachada Don Vito</h4><p>Arquitectura tradicional integrada con el paisaje rural.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1qYjklR9twbhLw7tj9oMPB02Jc4Lpx_U2" alt="Dormitorio 1"><div class="gallery-info"><h4>Dormitorio Principal</h4><p>Habitaciones confortables diseñadas para un descanso profundo.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1jz2xU264hbogyjA5Q7ViiBhmYBUSmjDj" alt="Dormitorio 2"><div class="gallery-info"><h4>Dormitorio</h4><p>Ambientes luminosos, limpios y perfectamente equipados.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/10eHOdm7vVeLEKzdgzh5tqHOYRZT522mo" alt="Comedor 1"><div class="gallery-info"><h4>Comedor Familiar</h4><p>Mesa amplia para disfrutar de las mejores comidas en familia.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1aUfr3MRWY01pznFmAJTxVo3IGW8aMcLv" alt="Comedor 2"><div class="gallery-info"><h4>Espacio de Reunión</h4><p>Detalles acogedores que te hacen sentir como en casa.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1bsmDY6xtSJ8gY3D13ppiOynv253aahkT" alt="Cocina"><div class="gallery-info"><h4>Cocina Equipada</h4><p>Todo lo necesario para preparar tus platos favoritos.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1tw0wYhz7eQVxyYfyTKlEUiv0IuoBbSEa" alt="Mesada"><div class="gallery-info"><h4>Detalle de Cocina</h4><p>Funcionalidad y comodidad en cada rincón.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1quSjYX8mDlBgkZ9XKl0Qsy1_TYXyBjfn" alt="Baño"><div class="gallery-info"><h4>Baño Completo</h4><p>Higiene, modernidad y confort impecables.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1YXcnvEUyc5zhC2h-Gc6ebliE-bmpJaFe" alt="Galeria 1"><div class="gallery-info"><h4>Galería Exterior</h4><p>Perfecta para tomar unos mates a la tarde.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/16GCQwkMsQWgOP4SGdgObWvv_anQGHsgU" alt="Galeria 2"><div class="gallery-info"><h4>Galería y Sombra</h4><p>Disfrutá del aire libre con total comodidad.</p></div></div>
+                <div class="gallery-item"><img class="gallery-img" src="https://lh3.googleusercontent.com/d/1PvNF-Ip9prsam874GF6sNeyJHA0w56Z_" alt="Horno de Barro"><div class="gallery-info"><h4>Horno de Barro Tradicional</h4><p>Cociná con el sabor único de la tradición del campo.</p></div></div>
             </div>
         </section>
 
@@ -808,7 +118,6 @@
                     <li><span class="label">Check-out:</span> <span>Hasta las 12:00 hs (AM)</span></li>
                 </ul>
             </div>
-
             <div class="info-box">
                 <h3>Lugares para Conocer</h3>
                 <ul class="info-list">
@@ -818,7 +127,6 @@
                     <li><span class="label">San Antonio de Areco:</span> <span>38 km</span></li>
                 </ul>
             </div>
-
             <div class="info-box">
                 <h3>En el Pueblo de Cucullú</h3>
                 <ul class="info-list">
@@ -830,66 +138,33 @@
         </section>
 
         <section id="reservas" class="reserva-section">
-    <h2 class="section-title">Solicitar Reserva</h2>
-    <form id="reservaForm" class="reserva-form">
-        <input type="text" id="nombre" placeholder="Nombre y Apellido" required>
-        <input type="tel" id="telefono" placeholder="Teléfono" required>
-        <label style="text-align:left; font-weight:bold;">Fecha Check-in:</label>
-        <input type="date" id="checkin" required>
-        <label style="text-align:left; font-weight:bold;">Fecha Check-out:</label>
-        <input type="date" id="checkout" required>
-        <button type="submit" class="btn-submit" id="btnEnviar">Enviar Solicitud y Reservar</button>
-    </form>
-</section>
-
-<script>
-    // URL del Google Apps Script
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzKyR1N142pR1fm_iU2jlmL8NbrgHimhxFUB3cNLirS_DFHV0X9nt8KZpRPnug6bCsf/exec';
-
-    document.getElementById('reservaForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('btnEnviar');
-        btn.disabled = true;
-        btn.innerText = 'Enviando a Graciela...';
-
-        const nombre = document.getElementById('nombre').value;
-        const telefono = document.getElementById('telefono').value;
-        const checkin = document.getElementById('checkin').value;
-        const checkout = document.getElementById('checkout').value;
-
-        try {
-            // 1. Enviar datos a Google Sheets
-            await fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, telefono, checkin, checkout })
-            });
-
-            // 2. Abrir WhatsApp con el mensaje pre-escrito
-            const msg = `Hola Graciela! Quiero realizar una nueva reserva:%0A%0A👤 *Nombre:* ${nombre}%0A📞 *Tel:* ${telefono}%0A🗓️ *Check-in:* ${checkin}%0A📅 *Check-out:* ${checkout}`;
-            window.open(`https://wa.me/5491154523758?text=${msg}`, '_blank');
-
-            alert('¡Solicitud registrada correctamente! Se abrirá WhatsApp para confirmar con Graciela.');
-            document.getElementById('reservaForm').reset();
-        } catch (error) {
-            alert('Hubo un error al enviar la reserva. Por favor intenta nuevamente.');
-        } finally {
-            btn.disabled = false;
-            btn.innerText = 'Enviar Solicitud y Reservar';
-        }
-    });
-</script>
+            <h2 class="section-title">Solicitar Reserva</h2>
+            <form id="reservaForm" class="reserva-form">
+                <div class="form-group">
+                    <input type="text" id="nombre" placeholder="Nombre y Apellido" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" id="telefono" placeholder="Teléfono" required>
+                </div>
+                <div class="form-group date-group">
+                    <div>
+                        <label for="checkin">Fecha Check-in:</label>
+                        <input type="date" id="checkin" required>
+                    </div>
+                    <div>
+                        <label for="checkout">Fecha Check-out:</label>
+                        <input type="date" id="checkout" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" id="btnEnviarReserva">Enviar Solicitud y Reservar</button>
+            </form>
         </section>
 
-        <!-- SECCIÓN DE COMENTARIOS -->
         <section id="opiniones" class="comments-section">
             <h2 class="section-title">Opiniones de nuestros Huéspedes</h2>
-            
             <form class="comment-form" id="reviewForm">
                 <h3>Dejanos tu comentario</h3>
                 <input type="text" id="formNombre" placeholder="Tu Nombre" required>
-                
                 <div class="rating-stars">
                     <input type="radio" id="star5" name="puntuacion" value="5" required><label for="star5">★</label>
                     <input type="radio" id="star4" name="puntuacion" value="4"><label for="star4">★</label>
@@ -897,17 +172,14 @@
                     <input type="radio" id="star2" name="puntuacion" value="2"><label for="star2">★</label>
                     <input type="radio" id="star1" name="puntuacion" value="1"><label for="star1">★</label>
                 </div>
-                
                 <textarea id="formComentario" rows="4" placeholder="¿Cómo fue tu experiencia en Don Vito?" required></textarea>
-                <button type="submit" class="btn-submit" id="btnEnviar">Enviar Comentario</button>
+                <button type="submit" class="btn-submit" id="btnEnviarComentario">Enviar Comentario</button>
             </form>
-
             <div class="comments-list" id="listaComentarios">
                 <p style="text-align:center; color:#888;">Cargando opiniones...</p>
             </div>
         </section>
 
-        <!-- NUEVA SECCIÓN DE CONTACTO ANFITRIONA -->
         <section id="contacto" class="contact-section">
             <h2 class="section-title">Contacto Directo</h2>
             <div class="contact-box">
@@ -931,73 +203,6 @@
         <p>© 2026 Don Vito - Casa de Huéspedes en Cucullú. Todos los derechos reservados.</p>
     </footer>
 
-    <!-- LÓGICA DE JAVASCRIPT CONEXIÓN APPS SCRIPT -->
-    <script>
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
-
-        async function cargarComentarios() {
-            const lista = document.getElementById('listaComentarios');
-            try {
-                const respuesta = await fetch(SCRIPT_URL);
-                const comentarios = await respuesta.json();
-                
-                if(comentarios.length === 0) {
-                    lista.innerHTML = '<p style="text-align:center; color:#888;">Todavía no hay opiniones. ¡Sé el primero!</p>';
-                    return;
-                }
-
-                lista.innerHTML = '';
-                comentarios.forEach(c => {
-                    let estrellas = '★'.repeat(c.puntuacion) + '☆'.repeat(5 - c.puntuacion);
-                    
-                    const card = document.createElement('div');
-                    card.className = 'comment-card';
-                    card.innerHTML = `
-                        <div class="comment-header">
-                            <span class="comment-name">${c.nombre}</span>
-                            <span class="comment-stars">${estrellas}</span>
-                        </div>
-                        <p class="comment-text">${c.comentario}</p>
-                    `;
-                    lista.appendChild(card);
-                });
-            } catch (error) {
-                lista.innerHTML = '<p style="text-align:center; color:red;">No se pudieron cargar las opiniones.</p>';
-            }
-        }
-
-        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviar');
-            btn.disabled = true;
-            btn.innerText = 'Enviando...';
-
-            const datos = {
-                nombre: document.getElementById('formNombre').value,
-                puntuacion: document.querySelector('input[name="puntuacion"]:checked').value,
-                comentario: document.getElementById('formComentario').value
-            };
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datos)
-                });
-                
-                alert('¡Gracias por tu comentario!');
-                document.getElementById('reviewForm').reset();
-                cargarComentarios(); 
-            } catch (error) {
-                alert('Hubo un error al enviar el comentario.');
-            } finally {
-                btn.disabled = false;
-                btn.innerText = 'Enviar Comentario';
-            }
-        });
-
-        cargarComentarios();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
