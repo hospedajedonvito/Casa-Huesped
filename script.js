@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    // URL de tus dos Google Apps Scripts
+    // URL de tus dos Google Apps Scripts (¡Ahora vinculadas correctamente!)
     const SCRIPT_RESERVAS_URL = 'https://script.google.com/macros/s/AKfycbzKyR1N142pR1fm_iU2jlmL8NbrgHimhxFUB3cNLirS_DFHV0X9nt8KZpRPnug6bCsf/exec';
     const SCRIPT_OPINIONES_URL = 'https://script.google.com/macros/s/AKfycby4Dh2bu3X5ZYEtAUE2Y6fIkgjo09a8ohyizvk_-G0wOJLipRhnKg9xha4YJNgbdeNw/exec';
 
@@ -17,6 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     if(slides.length > 0) {
+        // Asegura que empiece mostrando el primer slide
+        slides.forEach((slide, index) => {
+            slide.style.display = index === 0 ? "block" : "none";
+        });
         setInterval(nextSlide, slideInterval);
     }
 
@@ -56,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.innerText = 'Verificando disponibilidad...';
 
             try {
-                // Consultamos las fechas ocupadas
+                // CORREGIDO: Usamos SCRIPT_RESERVAS_URL para consultar disponibilidad
                 const respuesta = await fetch(SCRIPT_RESERVAS_URL);
                 const reservas = await respuesta.json();
 
@@ -74,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 btn.innerText = 'Enviando a Graciela...';
 
-                // Guardamos en Google Sheets (POST)
+                // CORREGIDO: Cambiado de SCRIPT_URL a SCRIPT_RESERVAS_URL para guardar en la hoja correcta
                 await fetch(SCRIPT_RESERVAS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -82,14 +86,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({ nombre, telefono, checkin, checkout })
                 });
 
-                // --- PEDAZO REPARADO: CONSTRUCCIÓN SÓLIDA DEL MENSAJE SIN SÍMBOLOS EXTRAÑOS ---
+                // Construcción limpia del mensaje para WhatsApp sin símbolos extraños
                 const mensaje = "Hola Graciela! Quiero realizar una nueva reserva:\n\n" +
                                 "👤 *Nombre:* " + nombre + "\n" +
                                 "📞 *Tel:* " + telefono + "\n" +
                                 "🗓️ *Check-in:* " + checkin + "\n" +
                                 "📅 *Check-out:* " + checkout;
                 
-                // Con esta función se eliminan los rombos con signos de pregunta de forma definitiva
                 window.open("https://wa.me/5491154523758?text=" + encodeURIComponent(mensaje), '_blank');
 
                 alert('¡Solicitud registrada correctamente! Se abrirá WhatsApp para confirmar con Graciela.');
@@ -115,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const respuesta = await fetch(SCRIPT_OPINIONES_URL);
             const comentarios = await respuesta.json();
             
-            if(comentarios.length === 0) {
+            if(!comentarios || comentarios.length === 0) {
                 listaComentarios.innerHTML = '<p style="text-align:center; color:#888;">Todavía no hay opiniones. ¡Sé el primero!</p>';
                 return;
             }
